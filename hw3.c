@@ -1,25 +1,47 @@
-void loop() {
-	char * line;
-	char ** args; //array of strings
-	int status;
-	
-	do{
-		printf("%s","CS361 >");
-		line = read();
-		args = parse(line);
-		status = execute(args);
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/wait.h>
 
-		free(line);
-		free(args);
-y
-	}while(status);
-}
+#define BUFSIZE (10)
+int main(int argc, char* argv[])
+{
+	int pipefds[2];
+	pid_t pid;
+	char buf[BUFSIZE];
 
-int main (int argc, char** argv[]) {
-	//load configuration files
-	
-	//runs a loop that reads the input	
-	loop();
+	//create pipe
+	if(pipe(pipefds) == -1){
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
+	memset(buf,0,BUFSIZE);
+	pid = fork();
 
+	if (pid == 0) {
+		//child close the write end
+		close(pipefds[1]);
+		//child read from the pipe read end until the pipe is empty
+		while(read(pipefds[0], buf, 1)==1){
+      buf[1] = '\0';
+			printf("CHILD read from pipe -- %s\n", buf);
+		}
+		//after finishing reading, child close the read end
+		close(pipefds[0]);
+		printf("CHILD: EXITING!\n");
+		exit(EXIT_SUCCESS);
+	}else {
+		printf("PARENT write in pipe\n");
+		//parent close the read end
+		close(pipefds[0]);
+		//parent write in the pipe write end
+		write(pipefds[1], "UICCS361", 8);
+		//after finishing writing, parent close the write end
+		close(pipefds[1]);
+		//parent wait for child
+		wait(NULL);
+	}
 	return 0;
 }
+
