@@ -1,14 +1,46 @@
 #include <stdio.h>
+
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
-#include <sys/wait.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <signal.h>
 
 #define BUFSIZE (10)
-int main()
-{
+int execute_Shell() {
+	char line[500];
+	while (1) {
+		printf("CS361 >"); 
+		fgets(line, 500, stdin); //take in input from line
+		line[strlen(line) - 1] = '\0'; // string termination character
+		char* word;
+		char** argsList = malloc(1000 * sizeof(char*));
 
-	int pipefds[2];
+		int i = 0;
+		word = strtok(line, " "); // parse line into word
+		while (word) {
+			argsList[i] = word;
+			++i;
+			word = strtok(NULL, " ");//iterate
+		}
+		argsList[i] = NULL;
+		
+		int pid;
+		int pid2;
+		
+		while(1){
+    			if(argsList[i] == '\0'){
+    				break;
+    			}
+    			if(!strcmp(line, "exit")){
+    				exit(0);
+    				return 0;
+     			}
+				int pipefds[2];
 	pid_t pid;
 	char buf[BUFSIZE];
 
@@ -43,5 +75,28 @@ int main()
 		//parent wait for child
 		wait(NULL);
 	}
+		}
+        return 0;
+    }
+}
+
+void sigintHandler(int sig) {
+	char msg[] = "\ncaught sigint\n";
+	write(1, msg, sizeof(msg));
+	execute_Shell();
+}
+
+void sigtstpHandler( int sig) {
+	char msg[]= "\ncaught sigtstp\n";
+	write(1,msg, sizeof(msg));
+    execute_Shell();
+}
+
+
+int main()
+{
+    signal(SIGINT, sigintHandler);
+	signal(SIGTSTP, sigtstpHandler);
+	execute_Shell();
  	return 0;
 }
