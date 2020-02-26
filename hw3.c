@@ -2,9 +2,47 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <sys/wait.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
-#define BUFSIZE (10)
+void sigintHandler(int sig) {
+	char msg[] = "\ncaught sigint\n";
+	write(1, msg, sizeof(msg));
+}
+
+void sigtstpHandler( int sig) {
+	char msg[]= "\ncaught sigtstp\n";
+	write(1,msg, sizeof(msg));
+
+}
+
+execute() {
+	char line[500];
+	while (TRUE) {
+		printf("CS351 >"); 
+		fgets(line, 500, stdin); //take in input from line
+		
+		char* word;
+		//char ** argv = malloc(1000 * sizeof(char*)); 
+		char* argsList[20];
+		int i = 0;
+   		for(i=0; i < 20; ++i)
+			argsList[i] = (char*)malloc(100*sizeof(char));
+		i = 0;
+		word = strtok(line, " "); // parse line into word
+		while (word) {
+			argsList[i] = word;
+			++i;
+			word = strtok(NULL, " ");//iterate
+		}
+		argsList[i] = NULL;
+
+		
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	int pipefds[2];
