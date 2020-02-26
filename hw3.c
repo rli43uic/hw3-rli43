@@ -45,10 +45,10 @@ void loop() {
         char line[500];
         char** argsList = malloc(1000 * sizeof(char*));
         char * word;
-        int status = 0;
-        int status2 = 0;
+//        int status = 0;
+//        int status2 = 0;
         int pid = 0;
-        int pid2 = 0;
+//        int pid2 = 0;
         
         while(1) {
                 printf("CS361 >");
@@ -67,7 +67,7 @@ void loop() {
                 argsList[i] = NULL; //make the last part null
                 printf("3\n");
 
-                status = execute(*argsList);
+                execute(*argsList);
                 
                 
                 pid = fork();
