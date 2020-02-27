@@ -14,14 +14,7 @@
 
 void loop() {
         
-        //int pipefds[2];
-        char line[500];
         
-        //Allocate memory
-        char *argsList[100];
-        for (int j = 0; j < 20; j++){
-            argsList[j] = (char*)malloc(100*sizeof(char));
-        }
         
 //          int status = 0;
  //       int status2 = 0;
@@ -31,59 +24,49 @@ void loop() {
     //    char* to;
         
         while(1) {
-                printf("CS361 >");
-                // x++;
-                // if (x == 2) {
-                //     break;
-                // }
-                fgets(line,500,stdin);
-                line[strlen(line) - 1] = '\0';
-                int pid;    
-                char * word;
-                int i=0;
-                word = strtok(line, " ");
-                while(word) {
-                        //printf("word: %s\n", word);
-                        strcpy(argsList[i], word);
-                        i++;    //move to next space
-                        word = strtok(NULL, " ");//iterate
-                }
-                //strcpy(argsList[i], "\0");
-                argsList[i] = NULL; //make the last part null
-
-                
-        		if(strcmp(argsList[0], "exit") == 0){
-        			exit(0);
-         		}
-         		
-        //  		if (strcmp(argsList[i], "|") == 0) {
-         		    
-         		    
-        //  		}
-         		
+            //int pipefds[2];
+            char line[500];
             
-                //}
-                //create pipe
-                
-                pid = fork();
-                //child
-                if (pid == 0) {
-                    // if (strcmp(argsList[1], "|") == 0) {
-                        
-                    // }
-                    execvp(argsList[0], argsList);
-                }
-                //parent
-                else {
-                    int stat;
-                    waitpid(pid, &stat, WUNTRACED);
-                    
-                    printf("pid:%d status:%d\n", pid,  WEXITSTATUS(stat));
-            // 		if(pid_2 != 0){
-            // 			printf("pid:%i status:%i\n", pid2, status2,  WEXITSTATUS(status_2));
-            // 		}
-                }
+            //Allocate memory
+            char *argsList[120];
+            for (int j = 0; j < 21; j++){
+                argsList[j] = (char*)malloc(120*sizeof(char));
+            }
+            printf("CS361 >");
+            fgets(line,500,stdin);
+            line[strlen(line) - 1] = '\0';
+            
+            pid_t pid;    
+            char * word;
+            
+            int i=0;
+            word = strtok(line, " ");
+            while(word) {
+                    //printf("word: %s\n", word);
+                    strcpy(argsList[i], word);
+                    i++;    //move to next space
+                    word = strtok(NULL, " ");//iterate
+            }
+            //strcpy(argsList[i], "\0");
+            argsList[i] = NULL; //make the last part null
+            
+    		if(strcmp(argsList[0], "exit") == 0){
+    			exit(0);
+     		}
+     		
+            pid = fork();
+            //child
+            if (pid == 0) {
+                execvp(argsList[0], argsList);
+            }
+            //parent
+            else {
+                int stat;
+                waitpid(pid, &stat, WUNTRACED);
+                printf("pid:%d status:%d\n", pid,  WEXITSTATUS(stat));
+            }
         }
+        
 }
 void sigintHandler(int sig) {
 // 	char msg[] = "\ncaught sigint\n";
