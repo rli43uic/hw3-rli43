@@ -6,95 +6,95 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
-
+#include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
 
-int execute(char* args) {
-    printf("4\n");
-        int i = 0;
-    
-        while(1) {
-            if (i == 10) {
-                
-                break;
-            }
-    		if(args[i] == '\0'){
-    			break;
-    		}
-    		if(strcmp(&args[0], "exit") == 0){
-    			exit(0);
-    			return 0;
-    			break;
-     		}
-     		
-     		if (strcmp(&args[i], ";") == 0) {
-     		    
-     		    
-     		}
-     		++i;
-     		
-     		printf("loop");
-        }
-        return 0;
-}
 
 void loop() {
-        int i = 0;
+        
+        //int pipefds[2];
         char line[500];
-        char** argsList = malloc(1000 * sizeof(char*));
-        char * word;
-//        int status = 0;
-//        int status2 = 0;
-        int pid = 0;
-//        int pid2 = 0;
+        
+        //Allocate memory
+        char *argsList[100];
+        for (int j = 0; j < 20; j++){
+            argsList[j] = (char*)malloc(100*sizeof(char));
+        }
+        
+//          int status = 0;
+ //       int status2 = 0;
+        
+  //      int pid2 = 0;
+    //    char* from;
+    //    char* to;
         
         while(1) {
                 printf("CS361 >");
+                // x++;
+                // if (x == 2) {
+                //     break;
+                // }
                 fgets(line,500,stdin);
                 line[strlen(line) - 1] = '\0';
-                printf("1\n");
-
-                i=0;
+                int pid;    
+                char * word;
+                int i=0;
                 word = strtok(line, " ");
-                printf("2\n");
-                while(word != NULL) {
-                        argsList[i] = word;
+                while(word) {
+                        //printf("word: %s\n", word);
+                        strcpy(argsList[i], word);
                         i++;    //move to next space
                         word = strtok(NULL, " ");//iterate
                 }
+                //strcpy(argsList[i], "\0");
                 argsList[i] = NULL; //make the last part null
-                printf("3\n");
 
-                execute(*argsList);
                 
+        		if(strcmp(argsList[0], "exit") == 0){
+        			exit(0);
+         		}
+         		
+        //  		if (strcmp(argsList[i], "|") == 0) {
+         		    
+         		    
+        //  		}
+         		
+            
+                //}
+                //create pipe
                 
                 pid = fork();
                 //child
                 if (pid == 0) {
-                    
-                    
+                    // if (strcmp(argsList[1], "|") == 0) {
+                        
+                    // }
+                    execvp(argsList[0], argsList);
                 }
                 //parent
                 else {
+                    int stat;
+                    waitpid(pid, &stat, WUNTRACED);
                     
-                    
-  //                  printf("pid:%i status:%i\n", pid, status,  WEXITSTATUS(status));
-//            		if(pid_2 != 0){
-    //        			printf("pid:%i status:%i\n", pid2, status2,  WEXITSTATUS(status_2));
-      //      		}
+                    printf("pid:%d status:%d\n", pid,  WEXITSTATUS(stat));
+            // 		if(pid_2 != 0){
+            // 			printf("pid:%i status:%i\n", pid2, status2,  WEXITSTATUS(status_2));
+            // 		}
                 }
         }
 }
 void sigintHandler(int sig) {
-	char msg[] = "\ncaught sigint\n";
-	write(1, msg, sizeof(msg));
+// 	char msg[] = "\ncaught sigint\n";
+// 	write(1, msg, sizeof(msg));
+	fprintf(stdout, "\ncaught sigint\n");
 }
 
 void sigtstpHandler( int sig) {
-	char msg[]= "\ncaught sigtstp\n";
-	write(1,msg, sizeof(msg));
+// 	char msg[]= "\ncaught sigtstp\n";
+// 	write(1,msg, sizeof(msg));
+	fprintf(stdout, "\ncaught sigtstp\n");
 }
 
 int main() {
